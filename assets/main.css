@@ -1,0 +1,39 @@
+/* auto detect dark mode */
+html {
+    color-scheme: dark;
+}
+
+main {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+@media screen and (max-width: 600px) {
+    main {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+.vertex {
+    background-color: #f4f4f4;
+    border: 2px solid #cccccc;
+    padding: 15px;
+    color: #333333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+
+.vertex:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+/* Specific input styling to match div */
+input.vertex {
+    font-size: 16px;
+}
