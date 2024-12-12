@@ -1,11 +1,19 @@
-/* auto detect dark mode */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+:root {
+    color-scheme: light dark;
+}
+
 html {
     color-scheme: dark;
+    font-family: 'Open Sans', sans-serif;
+    background-color: light-dark(#f4f4f4, #222222);
 }
 
 main {
     padding-left: 50px;
     padding-right: 50px;
+    height: 100vh;
 }
 
 @media screen and (max-width: 600px) {
@@ -16,24 +24,30 @@ main {
 }
 
 .vertex {
-    background-color: #f4f4f4;
-    border: 2px solid #cccccc;
-    padding: 15px;
-    color: #333333;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: light-dark(#222222, #f4f4f4);
+    width: auto;
+    min-width: 100px;
+    height: auto;
+    min-height: 20px;
+    line-height: 100%;
+    overflow: hidden;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
     box-sizing: border-box;
     transition: all 0.3s ease;
-}
+    display: inline-block;
+    font-size: 18px;
+    font-weight: normal;
+    resize: none;
 
+    vertical-align: middle;
+
+}
 
 .vertex:focus {
     outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-}
-
-/* Specific input styling to match div */
-input.vertex {
-    font-size: 16px;
+    background-color: light-dark(#c0c0c0, #1b1b1b);
 }
