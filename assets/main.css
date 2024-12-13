@@ -11,8 +11,8 @@ html {
 }
 
 main {
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 25%;
+    padding-right: 25%;
     height: 100vh;
 }
 
@@ -30,24 +30,43 @@ main {
     width: auto;
     min-width: 100px;
     height: auto;
-    min-height: 20px;
+    min-height: 25px;
     line-height: 100%;
     overflow: hidden;
-    padding: 5px;
+    padding: 10px;
     margin-left: 5px;
     margin-right: 5px;
     box-sizing: border-box;
-    transition: all 0.3s ease;
     display: inline-block;
     font-size: 18px;
     font-weight: normal;
     resize: none;
-
     vertical-align: middle;
+}
 
+.parent {
+    display: flex;
+    flex-direction: column;
+}
+
+.source {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid light-dark(#e0e0e0, #333333);
+    width: 100%;
 }
 
 .vertex:focus {
     outline: none;
     background-color: light-dark(#c0c0c0, #1b1b1b);
+}
+
+.vertex:hover {
+    background-color: light-dark(#d0d0d0, #1f1f1f);
 }
