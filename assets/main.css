@@ -25,17 +25,18 @@ main {
 
 .vertex {
     background-color: transparent;
-    border: none;
     color: light-dark(#222222, #f4f4f4);
-    width: auto;
+    width: 100%;
     min-width: 100px;
     height: auto;
     min-height: 25px;
-    line-height: 100%;
+    line-height: 120%;
     overflow: hidden;
     padding: 10px;
+    /* padding-top: 10px;
+    padding-bottom: 10px;
     margin-left: 5px;
-    margin-right: 5px;
+    margin-right: 5px; */
     box-sizing: border-box;
     display: inline-block;
     font-size: 18px;
@@ -52,7 +53,25 @@ main {
 .source {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+}
+
+
+.sortable {
+    border: 1px solid rgb(87, 85, 85);
+    padding: 1px;
+    margin-left: 25px;
+}
+
+.sortable-ghost {
+    background-color: light-dark(#27a19b, #27a19b);
+}
+
+.sortable-drag {
+    background-color: light-dark(#7427a1, #7427a1);
+}
+
+.sortable-chosen {
+    background-color: light-dark(#29b362, #29b362);
 }
 
 hr {

@@ -21,28 +21,32 @@ async def startup():
 app, rt = fast_app(
     live=True,
     pico=False,
-    hdrs=(Link(rel="stylesheet", href="assets/main.css", type="text/css"),),
+    hdrs=(
+        Link(rel="stylesheet", href="assets/main.css", type="text/css"),
+        NotStr(
+            """<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>"""
+        ),
+        Script(
+            src="assets/sortable.js",
+            type="module",
+        ),
+    ),
     on_startup=[startup],
 )
 
-# configure logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
-
-# # sqlite
-# conn = aiosqlite.connect("db.sqlite")
-# cursor = conn.cursor()
 
 
 def create_id():
     return str(uuid.uuid4())
 
 
-async def add_node(content, parent_id=None):
+async def add_node(content, parent_id=None, position=0):
     id = create_id()
     await cursor.execute(
-        "INSERT INTO nodes (id, parent_id, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        (id, parent_id, content, datetime.now(), datetime.now()),
+        "INSERT INTO nodes (id, parent_id, content, created_at, updated_at, position) VALUES (?, ?, ?, ?, ?, ?)",
+        (id, parent_id, content, datetime.now(), datetime.now(), position),
     )
     await conn.commit()
     return id
@@ -50,13 +54,19 @@ async def add_node(content, parent_id=None):
 
 async def add_sample_data():
     id1 = await add_node("Idea 1")
-    id2 = await add_node("Idea 2", id1)
-    id3 = await add_node("Idea 3", id1)
-    id3a = await add_node("Idea 3a", id3)
+    id2 = await add_node("Idea 2", parent_id=id1, position=1)
+    id3 = await add_node("Idea 3", parent_id=id1, position=2)
+    id3a = await add_node("Idea 3a", parent_id=id3, position=1)
+    id3b = await add_node("Idea 3b", parent_id=id3, position=2)
+    id3c = await add_node("Idea 3c", parent_id=id3, position=3)
 
     id4 = await add_node("Idea 4")
-    id5 = await add_node("Idea 5", id4)
-    id6 = await add_node("Idea 6", id4)
+    id5 = await add_node("Idea 5", parent_id=id4, position=1)
+    id5c = await add_node("Idea 5c", parent_id=id5, position=3)
+    id5a = await add_node("Idea 5a", parent_id=id5, position=1)
+    id5b = await add_node("Idea 5b", parent_id=id5, position=2)
+    id5d = await add_node("Idea 5d", parent_id=id5, position=4)
+    id6 = await add_node("Idea 6", parent_id=id4, position=2)
 
 
 async def create_db(overwrite=False):
@@ -82,6 +92,7 @@ async def create_db(overwrite=False):
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                         content TEXT NOT NULL,
+                        position REAL NOT NULL DEFAULT 0,
                         FOREIGN KEY (parent_id) REFERENCES nodes(id)
                     );
         """
@@ -105,30 +116,33 @@ async def get_all_sources():
 
 async def get_children_recursive_cte(parent_id):
     """
-    Retrieves all children of a node recursively using a single query
-    with a CTE and converting the data to the required dictionary format.
+    Retrieves all children of a node recursively, ordered by position,
+    using a single query with a CTE and converting the data to the required
+    dictionary format.
 
     Args:
         parent_id: The ID of the parent node.
 
     Returns:
         A list of dictionaries, each representing a child node with
-        'id', 'content', 'created_at', 'updated_at', and 'children'
-        (a list of its children).
+        'id', 'content', 'created_at', 'updated_at', 'position', and
+        'children' (a list of its children), ordered by position.
     """
     await cursor.execute(
         """
-        WITH RECURSIVE descendants(id, parent_id, content, created_at, updated_at, path) AS (
-            SELECT id, parent_id, content, created_at, updated_at, CAST(id AS TEXT)
+        WITH RECURSIVE descendants(id, parent_id, content, created_at, updated_at, position, path) AS (
+            SELECT id, parent_id, content, created_at, updated_at, position, CAST(id AS TEXT)
             FROM nodes
             WHERE id = ?
             UNION ALL
-            SELECT n.id, n.parent_id, n.content, n.created_at, n.updated_at, CAST(d.path || '/' || n.id AS TEXT)
+            SELECT n.id, n.parent_id, n.content, n.created_at, n.updated_at, n.position
+            , CAST(d.path || '/' || n.id AS TEXT)
             FROM nodes n
             INNER JOIN descendants d ON n.parent_id = d.id
         )
-        SELECT id, parent_id, content, created_at, updated_at, path
+        SELECT id, parent_id, content, created_at, updated_at, position, path
         FROM descendants
+        ORDER BY position
     """,
         (parent_id,),
     )
@@ -136,13 +150,14 @@ async def get_children_recursive_cte(parent_id):
     rows = await cursor.fetchall()
     nodes = {}
     for row in rows:
-        id, parent_id, content, created_at, updated_at, path = row
+        id, parent_id, content, created_at, updated_at, position, path = row
         nodes[id] = {
             "id": id,
             "parent_id": parent_id,
             "content": content,
             "created_at": created_at,
             "updated_at": updated_at,
+            "position": position,
             "children": [],
         }
 
@@ -165,18 +180,28 @@ def vertex(node, level):
 
     return Div(
         Div(
-            content if content else "",
-            id=id,
-            contenteditable=True,
-            hx_trigger="blur",
-            hx_post="/change",
-            hx_swap="none",
-            cls=f"vertex {'source' if level == 0 else ''}",
-            hx_vals=vals_str,
-            style=f"margin-left: {level * 20}px",
+            Div(
+                Div(
+                    style="border-radius: 50%; height: 7px; width: 7px; background-color: light-dark(#f4f4f4, #666666);",
+                ),
+                cls="handle",
+                style="height: 25px; width: 25px; border-radius: cursor: move;display:flex;align-items:center;justify-content:center;",
+            ),
+            Div(
+                content if content else "",
+                contenteditable=True,
+                cls=f" vertex",
+                hx_vals=vals_str,
+            ),
+            style="display:flex;flex-direction:row; align-items:center;",
         ),
-        *[vertex(d, level + 1) for d in node["children"]],
-        cls="parent",
+        Div(
+            *[vertex(d, level + 1) for d in node["children"]],
+            cls="sortable",
+            data_id=id,
+        ),
+        style=f"display:flex;flex-direction:column;",
+        data_id=id,
     )
 
 
@@ -184,11 +209,23 @@ async def draw_source_vertex(source):
 
     print(f"source: {source}")
     source_tree = await get_children_recursive_cte(source[0])
+    source_tree = source_tree[0]
     print(f"source_tree: {source_tree}")
 
-    return (
-        vertex(source_tree[0], level=0),
+    parent_id = source_tree["id"]
+    decendants = source_tree["children"]
+
+    return Div(
+        # vertex(source_tree, level=0),
+        source_tree["content"],
+        Div(
+            *[vertex(d, level=1) for d in decendants],
+            cls="sortable",
+            data_id=id,
+        ),
         Hr(),
+        id=parent_id,
+        cls="source",
     )
 
 
@@ -209,5 +246,15 @@ async def post(request):
     """ """
     x = await request.form()
     print(request, x)
+    print(x._dict)
+    return "ok"
+
+
+@rt("/dnd", methods=["POST"])
+async def post(request):
+    """ """
+    x = await request.body()
+    print(request, request.path_params, request.query_params, x)
+    x = await request.form()
     print(x._dict)
     return "ok"
