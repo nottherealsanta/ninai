@@ -1,0 +1,1 @@
+- [ ] Renormalization for position of nodes

@@ -23,7 +23,8 @@ htmx.onLoad(function (content) {
             onEnd: function (evt) {
                 console.log(evt);
 
-                const new_parent_id = evt.to.dataset.id;
+
+                var new_parent_id = evt.to.dataset.id;
 
                 var new_prev_id = null;
                 var new_next_id = null;
@@ -34,10 +35,10 @@ htmx.onLoad(function (content) {
                     new_next_id = evt.to.children[evt.newIndex + 1].dataset.id;
                 }
 
-
+                console.log(new_parent_id, new_prev_id, new_next_id);
                 // Construct the drag and drop payload
                 var payload = {
-                    moved_id: evt.item.dataset.id,
+                    id: evt.item.dataset.id,
                     new_parent_id: new_parent_id,
                     new_prev_id: new_prev_id,
                     new_next_id: new_next_id

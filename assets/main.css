@@ -11,8 +11,8 @@ html {
 }
 
 main {
-    padding-left: 25%;
-    padding-right: 25%;
+    padding-left: 20%;
+    padding-right: 20%;
     height: 100vh;
 }
 
@@ -26,13 +26,14 @@ main {
 .vertex {
     background-color: transparent;
     color: light-dark(#222222, #f4f4f4);
+    border: 1px solid transparent;
     width: 100%;
     min-width: 100px;
     height: auto;
     min-height: 25px;
     line-height: 120%;
     overflow: hidden;
-    padding: 10px;
+    padding: 5px;
     /* padding-top: 10px;
     padding-bottom: 10px;
     margin-left: 5px;
@@ -43,6 +44,18 @@ main {
     font-weight: normal;
     resize: none;
     vertical-align: middle;
+    white-space: pre-line
+}
+
+.handle {
+    height: 25px;
+    width: 25px;
+    margin-top: 4px;
+    border-radius: 100%;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .parent {
@@ -53,25 +66,36 @@ main {
 .source {
     font-size: 24px;
     font-weight: bold;
+    margin-bottom: 25px;
 }
 
 
 .sortable {
-    border: 1px solid rgb(87, 85, 85);
     padding: 1px;
     margin-left: 25px;
 }
 
+.debug {
+    border: 1px solid rgb(87, 85, 85);
+}
+
 .sortable-ghost {
-    background-color: light-dark(#27a19b, #27a19b);
+    background-color: light-dark(#27a19b, #414141);
+    height: 2px;
+    position: relative;
+    overflow: hidden;
 }
 
 .sortable-drag {
-    background-color: light-dark(#7427a1, #7427a1);
+    background-color: light-dark(#7427a1, #616161);
+    opacity: 0.5;
+    border: 1px solid light-dark(#7427a1, #616161);
 }
 
 .sortable-chosen {
-    background-color: light-dark(#29b362, #29b362);
+    /* background-color: light-dark(#29b362, #29b362); */
+    border: 1px solid light-dark(#27a19b, #161616);
+    box-shadow: 0 0 10px light-dark(#27a19b, #2c2c2c)
 }
 
 hr {

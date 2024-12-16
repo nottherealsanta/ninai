@@ -52,21 +52,102 @@ async def add_node(content, parent_id=None, position=0):
     return id
 
 
-async def add_sample_data():
-    id1 = await add_node("Idea 1")
-    id2 = await add_node("Idea 2", parent_id=id1, position=1)
-    id3 = await add_node("Idea 3", parent_id=id1, position=2)
-    id3a = await add_node("Idea 3a", parent_id=id3, position=1)
-    id3b = await add_node("Idea 3b", parent_id=id3, position=2)
-    id3c = await add_node("Idea 3c", parent_id=id3, position=3)
+# async def add_sample_data():
+#     id1 = await add_node("Idea 1")
+#     id2 = await add_node("Idea 2", parent_id=id1, position=1)
+#     id3 = await add_node("Idea 3", parent_id=id1, position=2)
+#     id3a = await add_node("Idea 3a", parent_id=id3, position=1)
+#     id3b = await add_node("Idea 3b", parent_id=id3, position=2)
+#     id3c = await add_node("Idea 3c", parent_id=id3, position=3)
 
-    id4 = await add_node("Idea 4")
-    id5 = await add_node("Idea 5", parent_id=id4, position=1)
-    id5c = await add_node("Idea 5c", parent_id=id5, position=3)
-    id5a = await add_node("Idea 5a", parent_id=id5, position=1)
-    id5b = await add_node("Idea 5b", parent_id=id5, position=2)
-    id5d = await add_node("Idea 5d", parent_id=id5, position=4)
-    id6 = await add_node("Idea 6", parent_id=id4, position=2)
+#     id4 = await add_node("Idea 4")
+#     id5 = await add_node("Idea 5", parent_id=id4, position=1)
+#     id5c = await add_node("Idea 5c", parent_id=id5, position=3)
+#     id5a = await add_node("Idea 5a", parent_id=id5, position=1)
+#     id5b = await add_node("Idea 5b", parent_id=id5, position=2)
+#     id5d = await add_node("Idea 5d", parent_id=id5, position=4)
+#     id6 = await add_node("Idea 6", parent_id=id4, position=2)
+
+
+async def add_sample_data():
+    # Core Ideas (no parent)
+    id1 = await add_node("Project Alpha - Initial Brainstorm")
+    id2 = await add_node("Personal Development Goals")
+    id3 = await add_node("Research Topics for Next Quarter")
+
+    # Project Alpha Details
+    id1_1 = await add_node("Scope Definition", parent_id=id1, position=1)
+    id1_2 = await add_node("Resource Allocation", parent_id=id1, position=2)
+    id1_3 = await add_node("Timeline and Milestones", parent_id=id1, position=3)
+
+    # Scope Definition Sub-points
+    id1_1_1 = await add_node("Identify Core Features", parent_id=id1_1, position=1)
+    id1_1_2 = await add_node("User Stories Workshop", parent_id=id1_1, position=2)
+    id1_1_3 = await add_node("Market Analysis Review", parent_id=id1_1, position=3)
+
+    # Resource Allocation Sub-points
+    id1_2_1 = await add_node("Budget Planning", parent_id=id1_2, position=1)
+    id1_2_2 = await add_node("Team Assignment", parent_id=id1_2, position=2)
+    id1_2_3 = await add_node("Tooling and Software", parent_id=id1_2, position=3)
+
+    # Timeline and Milestones Sub-points
+    id1_3_1 = await add_node("Phase 1: Research", parent_id=id1_3, position=1)
+    id1_3_2 = await add_node("Phase 2: Development", parent_id=id1_3, position=2)
+    id1_3_3 = await add_node("Phase 3: Testing", parent_id=id1_3, position=3)
+    id1_3_4 = await add_node("Phase 4: Launch", parent_id=id1_3, position=4)
+
+    # Personal Development Goals
+    id2_1 = await add_node("Skill Acquisition", parent_id=id2, position=1)
+    id2_2 = await add_node("Networking", parent_id=id2, position=2)
+    id2_3 = await add_node("Health and Wellbeing", parent_id=id2, position=3)
+
+    # Skill Acquisition Sub-points
+    id2_1_1 = await add_node("Learn Python", parent_id=id2_1, position=1)
+    id2_1_2 = await add_node("Master SQL", parent_id=id2_1, position=2)
+    id2_1_3 = await add_node("Public Speaking Course", parent_id=id2_1, position=3)
+
+    # Networking Sub-points
+    id2_2_1 = await add_node("Attend Industry Events", parent_id=id2_2, position=1)
+    id2_2_2 = await add_node("Connect on LinkedIn", parent_id=id2_2, position=2)
+    id2_2_3 = await add_node("Mentorship Program", parent_id=id2_2, position=3)
+
+    # Health and Wellbeing Sub-points
+    id2_3_1 = await add_node("Consistent Workout Schedule", parent_id=id2_3, position=1)
+    id2_3_2 = await add_node("Mindfulness Practice", parent_id=id2_3, position=2)
+    id2_3_3 = await add_node("Nutritional Diet Planning", parent_id=id2_3, position=3)
+
+    # Research Topics for Next Quarter
+    id3_1 = await add_node("AI and Machine Learning", parent_id=id3, position=1)
+    id3_2 = await add_node("Cybersecurity Trends", parent_id=id3, position=2)
+    id3_3 = await add_node("Sustainable Technologies", parent_id=id3, position=3)
+
+    # AI and Machine Learning Sub-points
+    id3_1_1 = await add_node("Deep Learning Models", parent_id=id3_1, position=1)
+    id3_1_2 = await add_node("Natural Language Processing", parent_id=id3_1, position=2)
+    id3_1_3 = await add_node(
+        "Computer Vision Applications", parent_id=id3_1, position=3
+    )
+
+    # Cybersecurity Trends Sub-points
+    id3_2_1 = await add_node("Threat Landscape Analysis", parent_id=id3_2, position=1)
+    id3_2_2 = await add_node("Emerging Security Protocols", parent_id=id3_2, position=2)
+    id3_2_3 = await add_node("Data Privacy Regulations", parent_id=id3_2, position=3)
+
+    # Sustainable Technologies Sub-points
+    id3_3_1 = await add_node(
+        "Renewable Energy Innovations", parent_id=id3_3, position=1
+    )
+    id3_3_2 = await add_node(
+        "Resource Management Strategies", parent_id=id3_3, position=2
+    )
+    id3_3_3 = await add_node("Circular Economy Approaches", parent_id=id3_3, position=3)
+
+    # Additional Random ideas
+    id4 = await add_node("Organize Home Office", parent_id=None, position=1)
+    id5 = await add_node("Plan a weekend trip", parent_id=None, position=2)
+    id6 = await add_node("Read 'Sapiens' ", parent_id=None, position=3)
+    id7 = await add_node("Try a new recipe", parent_id=id5, position=1)
+    id8 = await add_node("Book a hotel", parent_id=id5, position=2)
 
 
 async def create_db(overwrite=False):
@@ -172,10 +253,8 @@ def vertex(node, level):
 
     id = node["id"]
     content = node["content"]
-    vals_str = (f"js:{{'content': document.getElementById('{id}').innerText}}",)
-
-    print(
-        f"id: {id}, content: {content}, children: {node['children']}, vals_str: {vals_str}"
+    vals_str = (
+        f"js:{{'id':'{id}','content': document.getElementById('{id}').innerText}}",
     )
 
     return Div(
@@ -185,15 +264,19 @@ def vertex(node, level):
                     style="border-radius: 50%; height: 7px; width: 7px; background-color: light-dark(#f4f4f4, #666666);",
                 ),
                 cls="handle",
-                style="height: 25px; width: 25px; border-radius: cursor: move;display:flex;align-items:center;justify-content:center;",
+                style="",
             ),
             Div(
                 content if content else "",
+                id=id,
                 contenteditable=True,
                 cls=f" vertex",
+                hx_trigger="blur",
+                hx_swap="none",
+                hx_post="update_vertex",
                 hx_vals=vals_str,
             ),
-            style="display:flex;flex-direction:row; align-items:center;",
+            style="display:flex;flex-direction:row; align-items:start;",
         ),
         Div(
             *[vertex(d, level + 1) for d in node["children"]],
@@ -207,24 +290,25 @@ def vertex(node, level):
 
 async def draw_source_vertex(source):
 
-    print(f"source: {source}")
     source_tree = await get_children_recursive_cte(source[0])
     source_tree = source_tree[0]
-    print(f"source_tree: {source_tree}")
 
-    parent_id = source_tree["id"]
+    id = source_tree["id"]
     decendants = source_tree["children"]
 
     return Div(
         # vertex(source_tree, level=0),
-        source_tree["content"],
+        Div(
+            source_tree["content"],
+            style="margin: 10px 0",
+        ),
         Div(
             *[vertex(d, level=1) for d in decendants],
-            cls="sortable",
+            cls="sortable ",
             data_id=id,
         ),
         Hr(),
-        id=parent_id,
+        id=id,
         cls="source",
     )
 
@@ -241,20 +325,74 @@ async def get():
     )
 
 
-@rt("/change", methods=["POST"])
+@rt("/update_vertex", methods=["POST"])
 async def post(request):
     """ """
-    x = await request.form()
-    print(request, x)
-    print(x._dict)
+    request = (await request.form())._dict
+
+    log.info(f"/update_vertex: {request}")
+
+    id = request["id"]
+    content = request["content"]
+
+    await cursor.execute(
+        "UPDATE nodes SET content = ? WHERE id = ?",
+        (content, id),
+    )
+    await conn.commit()
+    log.info("updated")
+
     return "ok"
 
 
 @rt("/dnd", methods=["POST"])
 async def post(request):
     """ """
-    x = await request.body()
-    print(request, request.path_params, request.query_params, x)
-    x = await request.form()
-    print(x._dict)
+    request = (await request.form())._dict
+    id = request["id"]
+    new_parent_id = request["new_parent_id"]
+    new_prev_id = request["new_prev_id"]
+    new_next_id = request["new_next_id"]
+
+    # update parent_id
+    await cursor.execute(
+        "UPDATE nodes SET parent_id = ? WHERE id = ?",
+        (new_parent_id, id),
+    )
+    await conn.commit()
+
+    # get previous and next position
+
+    async def get_position(id):
+        fetchall = await (
+            await cursor.execute("SELECT position FROM nodes WHERE id = ?", (id,))
+        ).fetchall()
+        if fetchall:
+            return fetchall[0][0]
+        else:
+            return None
+
+    new_prev_position = await get_position(new_prev_id)
+    new_next_position = await get_position(new_next_id)
+
+    # update position
+    if new_prev_position and not new_next_position:
+        new_postion = new_prev_position + 1
+    elif new_next_position and not new_prev_position:
+        new_postion = new_next_position / 2
+    elif not new_prev_position and not new_next_position:
+        new_postion = 1
+    else:
+        new_postion = (new_prev_position + new_next_position) / 2
+
+    await cursor.execute(
+        "UPDATE nodes SET position = ? WHERE id = ?",
+        (new_postion, id),
+    )
+    await conn.commit()
+
+    log.info(
+        f" /dnd {id} {new_parent_id} {new_prev_position} {new_next_position} {new_postion}"
+    )
+
     return "ok"
