@@ -30,6 +30,29 @@ app, rt = fast_app(
             src="assets/sortable.js",
             type="module",
         ),
+        Script(
+            code="""
+            import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+            // for all ".marked" elements, when they fire blur, update the innerHTML
+            document.querySelectorAll(".marked").forEach((el) => {
+                el.addEventListener("blur", () => {
+                    // store the innerHTML in the element
+                    el.dataset.content = el.innerHTML
+                    console.log(el.innerHTML);
+                    el.innerHTML = marked.parse(el.innerHTML);
+                    console.log(el.innerHTML);
+                    console.log("blur");
+                });
+                el.addEventListener("focus", () => {
+                    if(el.dataset.content){
+                    el.innerHTML = el.dataset.content;
+                    }
+                    console.log("focus");
+                })
+            });
+            """,
+            type="module",
+        ),
     ),
     on_startup=[startup],
 )
@@ -266,16 +289,17 @@ def vertex(node, level):
                 cls="handle",
                 style="",
             ),
-            Div(
+            Textarea(
                 content if content else "",
                 id=id,
-                contenteditable=True,
-                cls=f" vertex",
+                # contenteditable=True,
+                cls=f"vertex",
                 hx_trigger="blur",
                 hx_swap="none",
                 hx_post="update_vertex",
                 hx_vals=vals_str,
             ),
+            Div(content if content else "", cls="marked"),
             style="display:flex;flex-direction:row; align-items:start;",
         ),
         Div(
