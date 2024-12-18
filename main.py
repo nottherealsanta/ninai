@@ -31,26 +31,7 @@ app, rt = fast_app(
             type="module",
         ),
         Script(
-            code="""
-            import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-            // for all ".marked" elements, when they fire blur, update the innerHTML
-            document.querySelectorAll(".marked").forEach((el) => {
-                el.addEventListener("blur", () => {
-                    // store the innerHTML in the element
-                    el.dataset.content = el.innerHTML
-                    console.log(el.innerHTML);
-                    el.innerHTML = marked.parse(el.innerHTML);
-                    console.log(el.innerHTML);
-                    console.log("blur");
-                });
-                el.addEventListener("focus", () => {
-                    if(el.dataset.content){
-                    el.innerHTML = el.dataset.content;
-                    }
-                    console.log("focus");
-                })
-            });
-            """,
+            src="assets/marked.js",
             type="module",
         ),
     ),
@@ -140,7 +121,7 @@ async def add_sample_data():
     id2_3_3 = await add_node("Nutritional Diet Planning", parent_id=id2_3, position=3)
 
     # Research Topics for Next Quarter
-    id3_1 = await add_node("AI and Machine Learning", parent_id=id3, position=1)
+    id3_1 = await add_node("## AI and Machine Learning", parent_id=id3, position=1)
     id3_2 = await add_node("Cybersecurity Trends", parent_id=id3, position=2)
     id3_3 = await add_node("Sustainable Technologies", parent_id=id3, position=3)
 
@@ -289,17 +270,24 @@ def vertex(node, level):
                 cls="handle",
                 style="",
             ),
-            Textarea(
-                content if content else "",
-                id=id,
-                # contenteditable=True,
-                cls=f"vertex",
-                hx_trigger="blur",
-                hx_swap="none",
-                hx_post="update_vertex",
-                hx_vals=vals_str,
+            Div(
+                Div(
+                    content if content else "",
+                    id=id,
+                    contenteditable=True,
+                    cls=f"vertex",
+                    hx_trigger="blur",
+                    hx_swap="none",
+                    hx_post="update_vertex",
+                    hx_vals=vals_str,
+                    style="display: none;",
+                ),
+                Div(
+                    cls="markdown",
+                    style="display: block;",
+                ),
+                cls="vertex-container",
             ),
-            Div(content if content else "", cls="marked"),
             style="display:flex;flex-direction:row; align-items:start;",
         ),
         Div(
