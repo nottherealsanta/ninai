@@ -7,7 +7,7 @@ document.querySelectorAll('.vertex-container').forEach(div => {
 
     const updateMarkdown = () => {
         const rawText = vertex.innerText;
-        markdown.innerHTML = marked.parse(rawText);
+        markdown.innerHTML = marked.parse(rawText,);
     };
     updateMarkdown();
 

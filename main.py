@@ -5,6 +5,7 @@ import logging
 from fasthtml.common import *
 from datetime import datetime
 from rich import print, inspect
+from rich.logging import RichHandler
 
 conn = None
 cursor = None
@@ -38,8 +39,13 @@ app, rt = fast_app(
     on_startup=[startup],
 )
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+)
+
+log = logging.getLogger("rich")
 
 
 def create_id():
@@ -265,10 +271,9 @@ def vertex(node, level):
         Div(
             Div(
                 Div(
-                    style="border-radius: 50%; height: 7px; width: 7px; background-color: light-dark(#f4f4f4, #666666);",
+                    cls="handle-dot",
                 ),
                 cls="handle",
-                style="",
             ),
             Div(
                 Div(
@@ -288,7 +293,7 @@ def vertex(node, level):
                 ),
                 cls="vertex-container",
             ),
-            style="display:flex;flex-direction:row; align-items:start;",
+            style="display:flex;flex-direction:row; align-items:center;",
         ),
         Div(
             *[vertex(d, level + 1) for d in node["children"]],
@@ -309,19 +314,31 @@ async def draw_source_vertex(source):
     decendants = source_tree["children"]
 
     return Div(
-        # vertex(source_tree, level=0),
         Div(
             source_tree["content"],
-            style="margin: 10px 0",
+            id=id,
+            contenteditable=True,
+            cls=f"source",
+            hx_trigger="blur",
+            hx_swap="none",
+            hx_post="update_vertex",
+            hx_vals=f"js:{{'id':'{id}','content': document.getElementById('{id}').innerText}}",
         ),
         Div(
             *[vertex(d, level=1) for d in decendants],
             cls="sortable ",
             data_id=id,
         ),
+        Div(
+            cls="add-vertex",
+            id=f"add-vertex-{id}",
+            hx_trigger="click",
+            hx_swap="none",
+            hx_post="add_vertex",
+            hx_vals=f"js:{{'parent_id':'{id}'}}",
+        ),
         Hr(),
-        id=id,
-        cls="source",
+        data_id=id,
     )
 
 
