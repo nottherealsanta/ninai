@@ -1,9 +1,14 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
 document.querySelectorAll('.vertex-container').forEach(div => {
+    init_vertex_div(div);
+});
+
+
+function init_vertex_div(div, setFocus = false) {
     const vertex = div.querySelector('.vertex');
     const markdown = div.querySelector('.markdown');
-    let isInputActive = false;
+    let isInputActive = setFocus;
 
     const updateMarkdown = () => {
         const rawText = vertex.innerText;
@@ -33,6 +38,11 @@ document.querySelectorAll('.vertex-container').forEach(div => {
         vertex.focus();
         event.stopPropagation();
     });
+    if (isInputActive) {
+        vertex.style.display = 'block';
+        markdown.style.display = 'none';
+        vertex.focus();
+    }
 
 
     document.addEventListener('click', function (event) {
@@ -42,4 +52,6 @@ document.querySelectorAll('.vertex-container').forEach(div => {
             }
         }
     });
-});
+}
+
+window.init_vertex_div = init_vertex_div

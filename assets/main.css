@@ -68,6 +68,7 @@ div[contenteditable] {
     border: 1px solid transparent;
     width: 100%;
     height: auto;
+    min-height: 25px;
     padding: 5px;
     font-size: 18px;
     font-weight: normal;

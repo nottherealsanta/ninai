@@ -52,7 +52,17 @@ def create_id():
     return str(uuid.uuid4())
 
 
-async def add_node(content, parent_id=None, position=0):
+async def add_node(content, parent_id=None, position=None):
+
+    if parent_id is not None and position is None:
+        # get max postion of children
+        await cursor.execute(
+            "SELECT MAX(position) FROM nodes WHERE parent_id = ?", (parent_id,)
+        )
+        position = await cursor.fetchone()
+        if position:
+            position = position[0] + 1
+
     id = create_id()
     await cursor.execute(
         "INSERT INTO nodes (id, parent_id, content, created_at, updated_at, position) VALUES (?, ?, ?, ?, ?, ?)",
@@ -183,7 +193,7 @@ async def create_db(overwrite=False):
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                         content TEXT NOT NULL,
-                        position REAL NOT NULL DEFAULT 0,
+                        position REAL DEFAULT 0,
                         FOREIGN KEY (parent_id) REFERENCES nodes(id)
                     );
         """
@@ -259,7 +269,7 @@ async def get_children_recursive_cte(parent_id):
     return [n for n in nodes.values() if n["parent_id"] is None]
 
 
-def vertex(node, level):
+def vertex(node):
 
     id = node["id"]
     content = node["content"]
@@ -296,7 +306,7 @@ def vertex(node, level):
             style="display:flex;flex-direction:row; align-items:center;",
         ),
         Div(
-            *[vertex(d, level + 1) for d in node["children"]],
+            *[vertex(d) for d in node["children"]],
             cls="sortable",
             data_id=id,
         ),
@@ -325,15 +335,17 @@ async def draw_source_vertex(source):
             hx_vals=f"js:{{'id':'{id}','content': document.getElementById('{id}').innerText}}",
         ),
         Div(
-            *[vertex(d, level=1) for d in decendants],
-            cls="sortable ",
+            *[vertex(d) for d in decendants],
+            cls="sortable",
             data_id=id,
+            id=f"sortable-{id}",
         ),
         Div(
             cls="add-vertex",
             id=f"add-vertex-{id}",
             hx_trigger="click",
-            hx_swap="none",
+            hx_swap="beforeend",
+            hx_target=f"#sortable-{id}",
             hx_post="add_vertex",
             hx_vals=f"js:{{'parent_id':'{id}'}}",
         ),
@@ -425,3 +437,30 @@ async def post(request):
     )
 
     return "ok"
+
+
+@rt("/add_vertex", methods=["POST"])
+async def post(request):
+    """ """
+    request = (await request.form())._dict
+
+    log.info(f"/add_vertex: {request}")
+
+    parent_id = request["parent_id"]
+
+    id = await add_node("", parent_id=parent_id)
+    content = ""
+    new_vertex = vertex({"id": id, "content": content, "children": []})
+
+    return (
+        new_vertex,
+        Script(
+            f"""
+              var newDiv = document.querySelector('[data-id="{id}"] .vertex-container');
+              init_vertex_div(newDiv, setFocus=true);
+              // set focus 
+              // newDiv.querySelector('.vertex').focus();
+              console.log(newDiv);
+            """
+        ),
+    )
