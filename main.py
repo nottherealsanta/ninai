@@ -60,8 +60,10 @@ async def add_node(content, parent_id=None, position=None):
             "SELECT MAX(position) FROM nodes WHERE parent_id = ?", (parent_id,)
         )
         position = await cursor.fetchone()
-        if position:
+        if position[0] is not None:
             position = position[0] + 1
+        else:
+            position = 0
 
     id = create_id()
     await cursor.execute(
@@ -274,7 +276,7 @@ def vertex(node):
     id = node["id"]
     content = node["content"]
     vals_str = (
-        f"js:{{'id':'{id}','content': document.getElementById('{id}').innerText}}",
+        f"js:{{'id':'{id}','content': document.getElementById('v-{id}').innerText}}",
     )
 
     return Div(
@@ -288,14 +290,21 @@ def vertex(node):
             Div(
                 Div(
                     content if content else "",
-                    id=id,
+                    id=f"v-{id}",
                     contenteditable=True,
-                    cls=f"vertex",
+                    cls=f"vertex-edit",
                     hx_trigger="blur",
                     hx_swap="none",
                     hx_post="update_vertex",
                     hx_vals=vals_str,
                     style="display: none;",
+                ),
+                Div(
+                    cls="height:0px; width:0px; background-color:red;",
+                    hx_trigger=f"keyup[keyCode==13&&!event.shiftKey] from:#v-{id}",
+                    hx_swap="none",
+                    hx_post="add_vertex_below",
+                    hx_vals=f"js:{{'prev_id':'{id}'}}",
                 ),
                 Div(
                     cls="markdown",
@@ -332,7 +341,7 @@ async def draw_source_vertex(source):
             hx_trigger="blur",
             hx_swap="none",
             hx_post="update_vertex",
-            hx_vals=f"js:{{'id':'{id}','content': document.getElementById('{id}').innerText}}",
+            hx_vals=f"js:{{'id':'{id}','content': document.getElementById('v-{id}').innerText}}",
         ),
         Div(
             *[vertex(d) for d in decendants],
@@ -350,6 +359,7 @@ async def draw_source_vertex(source):
             hx_vals=f"js:{{'parent_id':'{id}'}}",
         ),
         Hr(),
+        style="margin-bottom: 25px;",
         data_id=id,
     )
 
@@ -458,9 +468,15 @@ async def post(request):
             f"""
               var newDiv = document.querySelector('[data-id="{id}"] .vertex-container');
               init_vertex_div(newDiv, setFocus=true);
-              // set focus 
-              // newDiv.querySelector('.vertex').focus();
               console.log(newDiv);
             """
         ),
     )
+
+
+@rt("/add_vertex_below", methods=["POST"])
+async def post(request):
+    """ """
+    request = (await request.form())._dict
+
+    log.info(f"/add_vertex_below: {request}")
