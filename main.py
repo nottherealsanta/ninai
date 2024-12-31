@@ -304,7 +304,7 @@ def vertex(node):
                     hx_trigger=f"keyup[keyCode==13&&!event.shiftKey] from:#v-{id}",
                     hx_swap="none",
                     hx_post="add_vertex_below",
-                    hx_vals=f"js:{{'prev_id':'{id}'}}",
+                    hx_vals=f"js:{{'prev_id':'{id}', 'parent_id':'{node['parent_id']}'}}",
                 ),
                 Div(
                     cls="markdown",
@@ -335,7 +335,7 @@ async def draw_source_vertex(source):
     return Div(
         Div(
             source_tree["content"],
-            id=id,
+            id=f"v-{id}",
             contenteditable=True,
             cls=f"source",
             hx_trigger="blur",
@@ -460,7 +460,9 @@ async def post(request):
 
     id = await add_node("", parent_id=parent_id)
     content = ""
-    new_vertex = vertex({"id": id, "content": content, "children": []})
+    new_vertex = vertex(
+        {"id": id, "content": content, "children": [], "parent_id": parent_id}
+    )
 
     return (
         new_vertex,
@@ -474,9 +476,44 @@ async def post(request):
     )
 
 
+async def get_next_id(parent_id, prev_id):
+    await cursor.execute(
+        "SELECT id FROM nodes WHERE parent_id = ? AND position > (SELECT position FROM nodes WHERE id = ?) ORDER BY position ASC LIMIT 1",
+        (parent_id, prev_id),
+    )
+    ret = await cursor.fetchone()
+    if ret:
+        return ret[0]
+    else:
+        return None
+
+
+async def get_positions(parent_id, prev_id):
+    """gets the positions of the next and previous nodes"""
+    await cursor.execute(
+        f"SELECT id, position FROM nodes WHERE parent_id = ? AND position >= (SELECT position FROM nodes WHERE id = ?) ORDER BY position ASC LIMIT 2",
+        (parent_id, prev_id),
+    )
+    return await cursor.fetchall()
+
+
 @rt("/add_vertex_below", methods=["POST"])
 async def post(request):
     """ """
     request = (await request.form())._dict
 
-    log.info(f"/add_vertex_below: {request}")
+    prev_id = request["prev_id"]
+    parent_id = request["parent_id"]
+
+    next_id = await get_next_id(parent_id, prev_id)
+
+    log.info(f"/add_vertex_below: {prev_id} {parent_id} {next_id}")
+
+    positions = await get_positions(parent_id, prev_id)
+
+    log.info(positions)
+
+    # new_position = None
+
+    # if next_id is None:
+    #     new_position =
